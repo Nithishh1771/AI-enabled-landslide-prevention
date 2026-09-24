@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}AI Landslide Early Warning & Monitoring{% endblock %}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=3">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <div><strong>AI Landslide Early Warning & Monitoring</strong></div>
+  {% if session.get('user_id') %}
+  <nav><a href="/dashboard">Dashboard</a><a href="/map">Risk Map</a><a href="/logout">Logout</a></nav>
+  {% endif %}
+</header>
+<main>{% block content %}{% endblock %}</main>
+<footer>Prototype • DEMO / SIMULATED DATA • Decision support, not an autonomous evacuation order</footer>
+{% block scripts %}{% endblock %}
+</body>
+</html>

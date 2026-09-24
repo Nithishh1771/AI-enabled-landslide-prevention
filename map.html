@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}India Landslide Risk Map{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="section-title"><h1>India Landslide Risk Map</h1><a href="/dashboard">← Dashboard</a></div>
+  <div class="notice"><b>INDIA-FOCUSED SYSTEM</b> — This prototype is designed for landslide risk assessment within India. Low-risk areas are intentionally not displayed as colored risk zones.</div>
+  <div id="map" class="big-map"></div>
+  <div class="legend">
+    <span><i class="moderate"></i> Moderate</span>
+    <span><i class="high"></i> High</span>
+    <span><i class="critical"></i> Critical</span>
+    <span><i class="no-risk"></i> Low / No significant risk — not displayed</span>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/map.js') + '?v=3' }}"></script>{% endblock %}

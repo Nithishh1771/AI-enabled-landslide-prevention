@@ -1,0 +1,2 @@
+timestamp,latitude,longitude,rainfall_1h,rainfall_3h,rainfall_24h,soil_moisture,temperature,humidity,elevation,slope,aspect,land_cover,historical_landslide_density
+DEMO,27.33,88.61,105,180,260,82,24,90,1500,36,180,Forest,0.75

@@ -1,0 +1,553 @@
+{% extends "base.html" %}
+
+{% block title %}Risk Dashboard{% endblock %}
+
+{% block content %}
+
+<div class="container">
+
+  <!-- =====================================================
+       LIVE SYSTEM STATUS
+       ===================================================== -->
+
+  <div class="notice">
+    <b>LIVE MONITORING</b>
+    — Environmental conditions are retrieved from Open-Meteo
+    and processed through the Random Forest + Hybrid Risk Engine.
+    Terrain and historical-risk fields are currently prototype
+    inputs and should be replaced with validated authoritative
+    datasets before operational use.
+  </div>
+
+
+  <!-- =====================================================
+       CURRENT RISK + ENVIRONMENT CARDS
+       ===================================================== -->
+
+  <section class="grid cards">
+
+    <!-- Current Risk -->
+    <div class="card risk-card">
+
+      <small>CURRENT LANDSLIDE RISK</small>
+
+      <div id="riskScore">
+        --%
+      </div>
+
+      <span
+        id="riskCategory"
+        class="risk-badge">
+        --
+      </span>
+
+    </div>
+
+
+    <!-- Rainfall -->
+    <div class="card">
+
+      <small>RAINFALL (1H)</small>
+
+      <h2 id="rainfall">
+        -- mm
+      </h2>
+
+      <p>
+        Recent precipitation
+      </p>
+
+    </div>
+
+
+    <!-- Soil Moisture -->
+    <div class="card">
+
+      <small>SOIL MOISTURE</small>
+
+      <h2 id="soil">
+        --%
+      </h2>
+
+      <p>
+        Saturation indicator
+      </p>
+
+    </div>
+
+
+    <!-- Slope -->
+    <div class="card">
+
+      <small>SLOPE</small>
+
+      <h2 id="slope">
+        --°
+      </h2>
+
+      <p>
+        Terrain steepness
+      </p>
+
+    </div>
+
+
+    <!-- Elevation -->
+    <div class="card">
+
+      <small>ELEVATION</small>
+
+      <h2 id="elevation">
+        -- m
+      </h2>
+
+      <p>
+        Terrain height
+      </p>
+
+    </div>
+
+
+    <!-- Assessment Area -->
+    <div class="card">
+
+      <small>ASSESSMENT AREA</small>
+
+      <h2 id="area">
+        -- km²
+      </h2>
+
+      <p>
+        Connected high-risk cells
+      </p>
+
+    </div>
+
+  </section>
+
+
+
+  <!-- =====================================================
+       RISK ESCALATION + FUTURE PROJECTION
+       ===================================================== -->
+
+  <section class="grid two">
+
+
+    <!-- Risk Escalation -->
+    <div class="card">
+
+      <div class="section-title">
+
+        <h2>
+          Risk Escalation
+        </h2>
+
+        <span
+          id="trend"
+          class="badge">
+          --
+        </span>
+
+      </div>
+
+
+      <canvas
+        id="riskChart">
+      </canvas>
+
+
+      <p
+        id="escalationText"
+        class="muted">
+      </p>
+
+    </div>
+
+
+
+    <!-- Short-Term Projection -->
+    <div class="card">
+
+      <div class="section-title">
+
+        <h2>
+          Short-Term Projection
+        </h2>
+
+        <span class="muted">
+          trend projection only
+        </span>
+
+      </div>
+
+
+      <div
+        id="futureCards"
+        class="future">
+      </div>
+
+
+      <h3>
+        Risk Indicators
+      </h3>
+
+
+      <ul id="indicators">
+      </ul>
+
+    </div>
+
+  </section>
+
+
+
+  <!-- =====================================================
+       EVACUATION ASSESSMENT
+       ===================================================== -->
+
+  <section class="card assessment">
+
+    <div class="section-title">
+
+      <h2>
+        Evacuation Assessment
+      </h2>
+
+      <span
+        id="assessmentLevel"
+        class="badge">
+        --
+      </span>
+
+    </div>
+
+
+    <p id="assessmentAction">
+      Loading decision-support assessment…
+    </p>
+
+
+    <small>
+      For authorized authorities:
+      this is not an autonomous evacuation order.
+    </small>
+
+  </section>
+
+
+
+  <!-- =====================================================
+       LIVE DATA INFORMATION
+       ===================================================== -->
+
+  <section class="card">
+
+    <div class="section-title">
+
+      <h2>
+        Live Monitoring Information
+      </h2>
+
+      <span
+        id="liveStatus"
+        class="badge">
+        LIVE
+      </span>
+
+    </div>
+
+
+    <div class="grid two">
+
+      <div>
+
+        <p>
+          <b>Data Source</b>
+        </p>
+
+        <p class="muted">
+          Open-Meteo + Random Forest +
+          Hybrid Risk Engine
+        </p>
+
+      </div>
+
+
+      <div>
+
+        <p>
+          <b>Monitoring Location</b>
+        </p>
+
+        <p class="muted">
+          Latitude:
+          <span id="liveLatitude">
+            --
+          </span>
+          <br>
+
+          Longitude:
+          <span id="liveLongitude">
+            --
+          </span>
+        </p>
+
+      </div>
+
+    </div>
+
+
+    <p class="muted">
+
+      Last live update:
+      <span id="liveTimestamp">
+        --
+      </span>
+
+    </p>
+
+  </section>
+
+
+
+  <!-- =====================================================
+       SCENARIO SIMULATION
+       ===================================================== -->
+
+  <section class="card">
+
+    <div class="section-title">
+
+      <h2>
+        Scenario Simulation
+      </h2>
+
+      <button
+        class="button"
+        onclick="runSimulation()">
+
+        Run Simulation
+
+      </button>
+
+    </div>
+
+
+    <p class="muted">
+
+      Test different environmental conditions
+      to demonstrate how the landslide risk
+      changes.
+
+    </p>
+
+
+    <div class="controls">
+
+
+      <!-- Rainfall 1 hour -->
+      <label>
+
+        Rainfall 1h
+
+        <input
+          id="simRain1"
+          type="number"
+          min="0"
+          max="500"
+          value="105">
+
+      </label>
+
+
+      <!-- Rainfall 3 hours -->
+      <label>
+
+        Rainfall 3h
+
+        <input
+          id="simRain3"
+          type="number"
+          min="0"
+          max="1000"
+          value="180">
+
+      </label>
+
+
+      <!-- Rainfall 24 hours -->
+      <label>
+
+        Rainfall 24h
+
+        <input
+          id="simRain24"
+          type="number"
+          min="0"
+          max="2000"
+          value="260">
+
+      </label>
+
+
+      <!-- Soil moisture -->
+      <label>
+
+        Soil moisture
+
+        <input
+          id="simSoil"
+          type="number"
+          min="0"
+          max="100"
+          value="82">
+
+      </label>
+
+
+      <!-- Slope -->
+      <label>
+
+        Slope
+
+        <input
+          id="simSlope"
+          type="number"
+          min="0"
+          max="90"
+          value="36">
+
+      </label>
+
+
+      <!-- Elevation -->
+      <label>
+
+        Elevation
+
+        <input
+          id="simElev"
+          type="number"
+          min="0"
+          max="9000"
+          value="1500">
+
+      </label>
+
+
+      <!-- Historical density -->
+      <label>
+
+        Historical density
+
+        <input
+          id="simHist"
+          type="number"
+          step="0.01"
+          min="0"
+          max="1"
+          value="0.75">
+
+      </label>
+
+
+    </div>
+
+
+    <div
+      id="simStatus"
+      class="muted">
+
+      Live monitoring active.
+
+    </div>
+
+  </section>
+
+
+
+  <!-- =====================================================
+       GIS RISK MAP
+       ===================================================== -->
+
+  <section class="card">
+
+    <div class="section-title">
+
+      <h2>
+        GIS Risk Map
+      </h2>
+
+      <a href="/map">
+        Open full map →
+      </a>
+
+    </div>
+
+
+    <p class="muted">
+
+      India-focused landslide risk visualization.
+      Moderate, high and critical risk cells
+      are displayed on the map.
+
+    </p>
+
+
+    <div id="map">
+    </div>
+
+  </section>
+
+
+
+  <!-- =====================================================
+       ALERTS
+       ===================================================== -->
+
+  <section class="card alert-box">
+
+    <div class="section-title">
+
+      <h2>
+        Alerts
+      </h2>
+
+      <span
+        id="alertStatus"
+        class="badge">
+        MONITORING
+      </span>
+
+    </div>
+
+
+    <div id="alerts">
+
+      <p class="muted">
+        Loading alerts…
+      </p>
+
+    </div>
+
+  </section>
+
+
+</div>
+
+{% endblock %}
+
+
+
+<!-- =======================================================
+     DASHBOARD JAVASCRIPT
+     ======================================================= -->
+
+{% block scripts %}
+
+<script
+  src="{{ url_for('static', filename='js/dashboard.js') }}?v=4">
+</script>
+
+{% endblock %}
